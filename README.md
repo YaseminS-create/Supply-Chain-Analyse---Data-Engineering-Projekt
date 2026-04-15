@@ -15,7 +15,7 @@ The goal is to analyze logistics performance, delivery efficiency, and cost opti
    /dwh
       DWH_ALL.sql
    /analysis
-      03_ECommerce_DWH_Analysen.sql
+      ECommerce_DWH_Analysen.sql
 ```
 ## Data Architecture
 
