@@ -82,7 +82,7 @@ This project was developed as a group assignment for Data Engineering certificat
 
 
 ## Author
-Yasemin and Francesco
+Yasemin and @frosati1
 
 
 
