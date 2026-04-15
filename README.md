@@ -30,6 +30,8 @@ The goal is to analyze logistics performance, delivery efficiency, and cost opti
   * Products
   * Shippers
   * Warehouses
+  
+
 
 ### 2. Data Warehouse (OLAP)
 
@@ -39,6 +41,9 @@ The goal is to analyze logistics performance, delivery efficiency, and cost opti
 
   * Fact tables (e.g., sales, shipping)
   * Dimension tables (e.g., customer, product, time)
+ 
+  <img width="768" height="761" alt="grafik" src="https://github.com/user-attachments/assets/f5090187-43c3-46cd-ba34-4e7e9c0b254a" />
+
 
 ### 3. Analytics Layer
 
