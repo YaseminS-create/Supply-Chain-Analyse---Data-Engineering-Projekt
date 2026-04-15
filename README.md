@@ -42,7 +42,7 @@ The goal is to analyze logistics performance, delivery efficiency, and cost opti
 
 ### 3. Analytics Layer
 
-* File: `03_ECommerce_DWH_Analysen.sql`
+* File: `ECommerce_DWH_Analysen.sql`
 * Contains SQL queries for KPI calculations and reporting
 
 ## Key Analyses
