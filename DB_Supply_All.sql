@@ -1,0 +1,530 @@
+USE [master]
+GO
+/****** Object:  Database [SUPPLY CHAIN]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE DATABASE [SUPPLY CHAIN]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'SUPPLY CHAIN', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL17.MYSQL2025\MSSQL\DATA\SUPPLY CHAIN.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'SUPPLY CHAIN_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL17.MYSQL2025\MSSQL\DATA\SUPPLY CHAIN_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET COMPATIBILITY_LEVEL = 170
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [SUPPLY CHAIN].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET RECOVERY FULL 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET  MULTI_USER 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET OPTIMIZED_LOCKING = OFF 
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [SUPPLY CHAIN]
+GO
+/****** Object:  Table [dbo].[Address]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Address](
+	[AddressID] [int] IDENTITY(1,1) NOT NULL,
+	[StreetNr] [nvarchar](10) NULL,
+	[Street] [nvarchar](100) NULL,
+	[Zipcode] [nvarchar](10) NULL,
+	[City] [nvarchar](50) NULL,
+	[State] [nvarchar](50) NULL,
+	[Country] [nvarchar](50) NULL,
+ CONSTRAINT [PK_Address] PRIMARY KEY CLUSTERED 
+(
+	[AddressID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Customer]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Customer](
+	[CustomerID] [int] IDENTITY(1,1) NOT NULL,
+	[FName] [nvarchar](50) NOT NULL,
+	[LName] [nvarchar](50) NOT NULL,
+	[AddressID] [int] NULL,
+ CONSTRAINT [PK_Customer] PRIMARY KEY CLUSTERED 
+(
+	[CustomerID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vw_CustomerDetails]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+-- ============================================================================
+-- Views für häufige Abfragen
+-- =========================================================================
+
+-- View: Vollständige Kundeninformation
+CREATE   VIEW [dbo].[vw_CustomerDetails] AS
+SELECT 
+    c.CustomerID,
+    c.FName,
+    c.LName,
+    c.FName + ' ' + c.LName AS FullName,
+    a.Street,
+    a.StreetNr,
+    a.Zipcode,
+    a.City,
+    a.State,
+    a.Country
+FROM dbo.Customer c
+LEFT JOIN dbo.Address a ON c.AddressID = a.AddressID;
+
+GO
+/****** Object:  Table [dbo].[Category]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Category](
+	[CategoryID] [int] IDENTITY(1,1) NOT NULL,
+	[CategoryName] [nvarchar](100) NOT NULL,
+ CONSTRAINT [PK_Category] PRIMARY KEY CLUSTERED 
+(
+	[CategoryID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Product]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product](
+	[ProductID] [int] IDENTITY(1,1) NOT NULL,
+	[ProductName] [nvarchar](200) NOT NULL,
+	[Price] [decimal](10, 2) NULL,
+	[CategoryID] [int] NULL,
+ CONSTRAINT [PK_Product] PRIMARY KEY CLUSTERED 
+(
+	[ProductID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Orders]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Orders](
+	[OrderID] [int] IDENTITY(1,1) NOT NULL,
+	[Transactions] [nvarchar](50) NULL,
+	[OrderDate] [datetime] NULL,
+	[CustomerID] [int] NULL,
+	[ShipperID] [int] NULL,
+ CONSTRAINT [PK_Orders] PRIMARY KEY CLUSTERED 
+(
+	[OrderID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ListPO]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ListPO](
+	[OrderID] [int] NOT NULL,
+	[ProductID] [int] NOT NULL,
+	[Quantity] [int] NULL,
+ CONSTRAINT [PK_ListPO] PRIMARY KEY CLUSTERED 
+(
+	[OrderID] ASC,
+	[ProductID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vw_OrderDetails]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- View: Bestelldetails mit Produkten
+CREATE   VIEW [dbo].[vw_OrderDetails] AS
+SELECT 
+    o.OrderID,
+    o.OrderDate,
+    o.Transactions,
+    c.CustomerID,
+    c.FName + ' ' + c.LName AS CustomerName,
+    p.ProductID,
+    p.ProductName,
+    ct.Quantity,
+    p.Price,
+    ct.Quantity * p.Price AS LineTotal,
+    cat.CategoryName
+FROM dbo.Orders o
+INNER JOIN dbo.Customer c ON o.CustomerID = c.CustomerID
+INNER JOIN dbo.ListPO ct ON o.OrderID = ct.OrderID
+INNER JOIN dbo.[Product] p ON ct.ProductID = p.ProductID
+LEFT JOIN dbo.Category cat ON p.CategoryID = cat.CategoryID;
+
+GO
+/****** Object:  Table [dbo].[Warehouse]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Warehouse](
+	[WarehouseID] [int] IDENTITY(1,1) NOT NULL,
+	[Warehousename] [varchar](10) NULL,
+ CONSTRAINT [PK_Warehouse] PRIMARY KEY CLUSTERED 
+(
+	[WarehouseID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[is_stocked_in]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[is_stocked_in](
+	[ProductID] [int] NOT NULL,
+	[WarehouseID] [int] NOT NULL,
+	[StockQuantity] [int] NULL,
+	[MinimumStock] [int] NULL,
+ CONSTRAINT [PK_is_stocked_in] PRIMARY KEY CLUSTERED 
+(
+	[ProductID] ASC,
+	[WarehouseID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vw_StockLevels]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- View: Lagerbestand
+CREATE   VIEW [dbo].[vw_StockLevels] AS
+SELECT 
+    p.ProductID,
+    p.ProductName,
+    w.WarehouseID,
+    w.Warehousename,
+    s.StockQuantity,
+    s.MinimumStock,
+    CASE 
+        WHEN s.StockQuantity < s.MinimumStock THEN 'Low Stock'
+        WHEN s.StockQuantity = 0 THEN 'Out of Stock'
+        ELSE 'In Stock'
+    END AS StockStatus
+FROM dbo.[Product] p
+INNER JOIN dbo.is_stocked_in s ON p.ProductID = s.ProductID
+INNER JOIN dbo.Warehouse w ON s.WarehouseID = w.WarehouseID;
+
+GO
+/****** Object:  Table [dbo].[Shipping_Carrier]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Shipping_Carrier](
+	[ShipperID] [int] IDENTITY(1,1) NOT NULL,
+	[ShipperName] [nvarchar](100) NULL,
+	[ShippingCost] [decimal](8, 2) NULL,
+	[ShippingMethodID] [int] NULL,
+ CONSTRAINT [PK_Shipping_Carrier] PRIMARY KEY CLUSTERED 
+(
+	[ShipperID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ShippingMethod]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ShippingMethod](
+	[ShippingMethodID] [int] IDENTITY(1,1) NOT NULL,
+	[ShippingMethod] [nvarchar](50) NULL,
+	[ShippingTime] [int] NULL,
+ CONSTRAINT [PK_ShippingMethod] PRIMARY KEY CLUSTERED 
+(
+	[ShippingMethodID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Shippings]    Script Date: 12.02.2026 17:19:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Shippings](
+	[ShipperID] [int] NOT NULL,
+	[OrderID] [int] NOT NULL,
+	[ShipDate] [date] NULL,
+	[PlannedDaysforShipping] [int] NOT NULL,
+	[RealDaysforShipping] [int] NULL,
+ CONSTRAINT [PK_Shippings] PRIMARY KEY CLUSTERED 
+(
+	[ShipperID] ASC,
+	[OrderID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Address_City]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Address_City] ON [dbo].[Address]
+(
+	[City] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Address_Zipcode]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Address_Zipcode] ON [dbo].[Address]
+(
+	[Zipcode] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UIX_Category_Name]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE UNIQUE NONCLUSTERED INDEX [UIX_Category_Name] ON [dbo].[Category]
+(
+	[CategoryName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Customer_AddressID]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Customer_AddressID] ON [dbo].[Customer]
+(
+	[AddressID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Customer_Name]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Customer_Name] ON [dbo].[Customer]
+(
+	[LName] ASC,
+	[FName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_MinimumStock]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_MinimumStock] ON [dbo].[is_stocked_in]
+(
+	[StockQuantity] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_StockedIn_WarehouseID]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_StockedIn_WarehouseID] ON [dbo].[is_stocked_in]
+(
+	[WarehouseID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_StockQuantity_Product]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_StockQuantity_Product] ON [dbo].[is_stocked_in]
+(
+	[ProductID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Contains_ProductID]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Contains_ProductID] ON [dbo].[ListPO]
+(
+	[ProductID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Orders_CustomerID]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Orders_CustomerID] ON [dbo].[Orders]
+(
+	[CustomerID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Orders_OrderDate]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Orders_OrderDate] ON [dbo].[Orders]
+(
+	[OrderDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Orders_ShipperID]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Orders_ShipperID] ON [dbo].[Orders]
+(
+	[ShipperID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Product_CategoryID]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Product_CategoryID] ON [dbo].[Product]
+(
+	[CategoryID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Product_Name]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_Product_Name] ON [dbo].[Product]
+(
+	[ProductName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ShippingCarrier_MethodID]    Script Date: 12.02.2026 17:19:13 ******/
+CREATE NONCLUSTERED INDEX [IX_ShippingCarrier_MethodID] ON [dbo].[Shipping_Carrier]
+(
+	[ShippingMethodID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Customer]  WITH CHECK ADD  CONSTRAINT [FK_Customer_Address] FOREIGN KEY([AddressID])
+REFERENCES [dbo].[Address] ([AddressID])
+GO
+ALTER TABLE [dbo].[Customer] CHECK CONSTRAINT [FK_Customer_Address]
+GO
+ALTER TABLE [dbo].[is_stocked_in]  WITH CHECK ADD  CONSTRAINT [FK_StockedIn_Product] FOREIGN KEY([ProductID])
+REFERENCES [dbo].[Product] ([ProductID])
+GO
+ALTER TABLE [dbo].[is_stocked_in] CHECK CONSTRAINT [FK_StockedIn_Product]
+GO
+ALTER TABLE [dbo].[is_stocked_in]  WITH CHECK ADD  CONSTRAINT [FK_StockedIn_Warehouse] FOREIGN KEY([WarehouseID])
+REFERENCES [dbo].[Warehouse] ([WarehouseID])
+GO
+ALTER TABLE [dbo].[is_stocked_in] CHECK CONSTRAINT [FK_StockedIn_Warehouse]
+GO
+ALTER TABLE [dbo].[ListPO]  WITH CHECK ADD  CONSTRAINT [FK_ListPO_Order] FOREIGN KEY([OrderID])
+REFERENCES [dbo].[Orders] ([OrderID])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ListPO] CHECK CONSTRAINT [FK_ListPO_Order]
+GO
+ALTER TABLE [dbo].[ListPO]  WITH CHECK ADD  CONSTRAINT [FK_ListPO_Product] FOREIGN KEY([ProductID])
+REFERENCES [dbo].[Product] ([ProductID])
+GO
+ALTER TABLE [dbo].[ListPO] CHECK CONSTRAINT [FK_ListPO_Product]
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD  CONSTRAINT [FK_Orders_Customer] FOREIGN KEY([CustomerID])
+REFERENCES [dbo].[Customer] ([CustomerID])
+GO
+ALTER TABLE [dbo].[Orders] CHECK CONSTRAINT [FK_Orders_Customer]
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD  CONSTRAINT [FK_Orders_Shipper] FOREIGN KEY([ShipperID])
+REFERENCES [dbo].[Shipping_Carrier] ([ShipperID])
+GO
+ALTER TABLE [dbo].[Orders] CHECK CONSTRAINT [FK_Orders_Shipper]
+GO
+ALTER TABLE [dbo].[Product]  WITH CHECK ADD  CONSTRAINT [FK_Product_Category] FOREIGN KEY([CategoryID])
+REFERENCES [dbo].[Category] ([CategoryID])
+GO
+ALTER TABLE [dbo].[Product] CHECK CONSTRAINT [FK_Product_Category]
+GO
+ALTER TABLE [dbo].[Shipping_Carrier]  WITH CHECK ADD  CONSTRAINT [FK_ShippingCarrier_Method] FOREIGN KEY([ShippingMethodID])
+REFERENCES [dbo].[ShippingMethod] ([ShippingMethodID])
+GO
+ALTER TABLE [dbo].[Shipping_Carrier] CHECK CONSTRAINT [FK_ShippingCarrier_Method]
+GO
+ALTER TABLE [dbo].[Shippings]  WITH CHECK ADD  CONSTRAINT [FK_Shippings_Order] FOREIGN KEY([OrderID])
+REFERENCES [dbo].[Orders] ([OrderID])
+GO
+ALTER TABLE [dbo].[Shippings] CHECK CONSTRAINT [FK_Shippings_Order]
+GO
+ALTER TABLE [dbo].[Shippings]  WITH CHECK ADD  CONSTRAINT [FK_Shippings_Shipper] FOREIGN KEY([ShipperID])
+REFERENCES [dbo].[Shipping_Carrier] ([ShipperID])
+GO
+ALTER TABLE [dbo].[Shippings] CHECK CONSTRAINT [FK_Shippings_Shipper]
+GO
+ALTER TABLE [dbo].[is_stocked_in]  WITH CHECK ADD  CONSTRAINT [CK_StockedIn_MinStock] CHECK  (([MinimumStock]>=(0)))
+GO
+ALTER TABLE [dbo].[is_stocked_in] CHECK CONSTRAINT [CK_StockedIn_MinStock]
+GO
+ALTER TABLE [dbo].[is_stocked_in]  WITH CHECK ADD  CONSTRAINT [CK_StockedIn_Quantity] CHECK  (([StockQuantity]>=(0)))
+GO
+ALTER TABLE [dbo].[is_stocked_in] CHECK CONSTRAINT [CK_StockedIn_Quantity]
+GO
+ALTER TABLE [dbo].[ListPO]  WITH CHECK ADD  CONSTRAINT [CK_ListPO_Quantity] CHECK  (([Quantity]>=(0)))
+GO
+ALTER TABLE [dbo].[ListPO] CHECK CONSTRAINT [CK_ListPO_Quantity]
+GO
+ALTER TABLE [dbo].[Product]  WITH CHECK ADD  CONSTRAINT [CK_Product_Price] CHECK  (([Price]>(0)))
+GO
+ALTER TABLE [dbo].[Product] CHECK CONSTRAINT [CK_Product_Price]
+GO
+ALTER TABLE [dbo].[Shippings]  WITH CHECK ADD  CONSTRAINT [CK_Shippings_PlannedDaysforShipping] CHECK  (([PlannedDaysforShipping]>=(0)))
+GO
+ALTER TABLE [dbo].[Shippings] CHECK CONSTRAINT [CK_Shippings_PlannedDaysforShipping]
+GO
+ALTER TABLE [dbo].[Shippings]  WITH CHECK ADD  CONSTRAINT [CK_Shippings_RealDaysforShipping] CHECK  (([RealDaysforShipping]>=(0)))
+GO
+ALTER TABLE [dbo].[Shippings] CHECK CONSTRAINT [CK_Shippings_RealDaysforShipping]
+GO
+USE [master]
+GO
+ALTER DATABASE [SUPPLY CHAIN] SET  READ_WRITE 
+GO
